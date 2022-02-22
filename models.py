@@ -99,9 +99,7 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
             mlp(
                 observation_shape[0]
                 * observation_shape[1]
-                * observation_shape[2]
-                * (stacked_observations + 1)
-                + stacked_observations * observation_shape[1] * observation_shape[2],
+                * observation_shape[2] * 2,
                 fc_representation_layers,
                 encoding_size,
             )
@@ -134,6 +132,8 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         encoded_state = self.representation_network(
             observation.view(observation.shape[0], -1)
         )
+
+        # encoded_state = observation.view(observation.shape[0], -1)
         # Scale encoded state between [0, 1] (See appendix paper Training)
         min_encoded_state = encoded_state.min(1, keepdim=True)[0]
         max_encoded_state = encoded_state.max(1, keepdim=True)[0]
