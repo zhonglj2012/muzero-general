@@ -520,7 +520,7 @@ class GameHistory:
         index = index % len(self.observation_history)
 
         stacked_observations = self.observation_history[index].copy()
-        previous_observation = self.action_history[0].copy(),
+        previous_observation = numpy.ones_like(stacked_observations[0]) * self.action_history[0],
         stacked_observations = numpy.concatenate(
                 (stacked_observations, previous_observation)
             )
