@@ -91,3 +91,7 @@ venv.bak/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+nohup.out
+results/
+tensorboard.log
