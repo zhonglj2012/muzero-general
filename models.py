@@ -209,6 +209,7 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
             encoded_state = self.fc_encoded_state_network(x)
 
             self.encoded_state_global = encoded_state
+        print(encoded_state.shape)
         policy_logits, value = self.prediction(encoded_state)
         # reward equal to 0 for consistency
         reward = torch.log(
