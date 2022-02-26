@@ -547,6 +547,17 @@ class GameHistory:
 
         return stacked_observations
 
+    # def get_stacked_observations(self, index, num_stacked_observations):
+
+    #     index = index % len(self.observation_history)
+    #     stacked_observations = self.observation_history[index].copy()
+    #     previous_observation = numpy.ones_like(
+    #         stacked_observations[0]) * self.action_history[index-1],
+    #     stacked_observations = numpy.concatenate(
+    #         (stacked_observations, previous_observation)
+    #     )
+    #     return stacked_observations
+
 
 class MinMaxStats:
     """
