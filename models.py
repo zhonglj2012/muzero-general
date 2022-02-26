@@ -188,13 +188,14 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         else:
             encoded_state = self.representation(observation)
             # try:
-            sp1 = encoded_state.shape
-            sp2 = self.encoded_state_global.shape
-            print('sp1',sp1)
-            print('sp2',sp2)
+            # sp1 = encoded_state.shape
+            # sp2 = self.encoded_state_global.shape
+            # print('sp1',sp1)
+            # print('sp2',sp2)
             # self.encoded_state_global = self.encoded_state_global.reshape(encoded_state.shape[0],)
             if encoded_state.shape[0] < self.encoded_state_global.shape[0]:
                 encoded_state_global_ret = self.encoded_state_global[:encoded_state.shape[0],:]
+                print(encoded_state_global_ret)
                 x = torch.cat((encoded_state, encoded_state_global_ret), dim=1)
             elif encoded_state.shape[0] > self.encoded_state_global.shape[0]:
                 encoded_state_ret = encoded_state[:self.encoded_state_global.shape[0],:]
