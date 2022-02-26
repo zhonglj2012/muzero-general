@@ -2,7 +2,7 @@ import math
 from abc import ABC, abstractmethod
 
 import torch
-import traceback
+
 
 class MuZeroNetwork:
     def __new__(cls, config):
@@ -56,7 +56,6 @@ def dict_to_cpu(dictionary):
 class AbstractNetwork(ABC, torch.nn.Module):
     def __init__(self):
         super().__init__()
-        
         pass
 
     @abstractmethod
@@ -95,15 +94,12 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         super().__init__()
         self.action_space_size = action_space_size
         self.full_support_size = 2 * support_size + 1
-        self.encoded_state_global=None
-        self.encoded_state_global_size = encoding_size
+
         self.representation_network = torch.nn.DataParallel(
             mlp(
                 observation_shape[0]
                 * observation_shape[1]
-                * observation_shape[2]
-                * (stacked_observations + 1)
-                + stacked_observations * observation_shape[1] * observation_shape[2],
+                * observation_shape[2] * 2,
                 fc_representation_layers,
                 encoding_size,
             )
@@ -112,13 +108,6 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         self.dynamics_encoded_state_network = torch.nn.DataParallel(
             mlp(
                 encoding_size + self.action_space_size,
-                fc_dynamics_layers,
-                encoding_size,
-            )
-        )
-        self.fc_encoded_state_network = torch.nn.DataParallel(
-            mlp(
-                encoding_size + self.encoded_state_global_size,
                 fc_dynamics_layers,
                 encoding_size,
             )
@@ -143,6 +132,8 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         encoded_state = self.representation_network(
             observation.view(observation.shape[0], -1)
         )
+
+        # encoded_state = observation.view(observation.shape[0], -1)
         # Scale encoded state between [0, 1] (See appendix paper Training)
         min_encoded_state = encoded_state.min(1, keepdim=True)[0]
         max_encoded_state = encoded_state.max(1, keepdim=True)[0]
@@ -179,37 +170,7 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
         return next_encoded_state_normalized, reward
 
     def initial_inference(self, observation):
-        # print(self.encoded_state_global)
-        # encoded_state = self.representation(observation)
-        
-        if self.encoded_state_global is None:
-            encoded_state = self.representation(observation)
-            self.encoded_state_global = encoded_state
-        else:
-            encoded_state = self.representation(observation)
-            try:
-                sp1 = encoded_state.shape
-                sp2 = self.encoded_state_global.shape
-                # self.encoded_state_global = self.encoded_state_global.reshape(encoded_state.shape[0],)
-                if encoded_state.shape[0] < self.encoded_state_global.shape[0]:
-                    encoded_state_global_ret = self.encoded_state_global[:encoded_state.shape[0],:]
-                    x = torch.cat((encoded_state, encoded_state_global_ret), dim=1)
-                elif encoded_state.shape[0] > self.encoded_state_global.shape[0]:
-                    encoded_state_ret = encoded_state[:self.encoded_state_global.shape[0],:]
-                    x = torch.cat((encoded_state_ret, self.encoded_state_global), dim=1)
-                else:
-                    x = torch.cat((encoded_state, self.encoded_state_global), dim=1)
-            except:
-                print(sp1)
-                print(sp2)
-                print(encoded_state.shape)
-                print(self.encoded_state_global.shape)
-                traceback.print_exc()
-            self.encoded_state_global_size = self.encoded_state_global.shape[1]
-            encoded_state = self.fc_encoded_state_network(x)
-
-            self.encoded_state_global = encoded_state
-        print(encoded_state.shape)
+        encoded_state = self.representation(observation)
         policy_logits, value = self.prediction(encoded_state)
         # reward equal to 0 for consistency
         reward = torch.log(

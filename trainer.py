@@ -257,7 +257,8 @@ class Trainer:
 
         # Optimize
         self.optimizer.zero_grad()
-        loss.backward(retain_graph=True)
+        # loss.backward(retain_graph=True)
+        loss.backward()
         self.optimizer.step()
         self.training_step += 1
 

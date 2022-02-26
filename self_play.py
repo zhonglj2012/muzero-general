@@ -511,52 +511,48 @@ class GameHistory:
         else:
             self.root_values.append(None)
 
-    def get_stacked_observations(self, index, num_stacked_observations):
-        """
-        Generate a new observation with the observation at the index position
-        and num_stacked_observations past observations and actions stacked.
-        """
-        # Convert to positive index
-        index = index % len(self.observation_history)
-
-        stacked_observations = self.observation_history[index].copy()
-        for past_observation_index in reversed(
-            range(index - num_stacked_observations, index)
-        ):
-            if 0 <= past_observation_index:
-                previous_observation = numpy.concatenate(
-                    (
-                        self.observation_history[past_observation_index],
-                        [
-                            numpy.ones_like(stacked_observations[0])
-                            * self.action_history[past_observation_index + 1]
-                        ],
-                    )
-                )
-            else:
-                previous_observation = numpy.concatenate(
-                    (
-                        numpy.zeros_like(self.observation_history[index]),
-                        [numpy.zeros_like(stacked_observations[0])],
-                    )
-                )
-
-            stacked_observations = numpy.concatenate(
-                (stacked_observations, previous_observation)
-            )
-
-        return stacked_observations
-
     # def get_stacked_observations(self, index, num_stacked_observations):
 
     #     index = index % len(self.observation_history)
+
     #     stacked_observations = self.observation_history[index].copy()
-    #     previous_observation = numpy.ones_like(
-    #         stacked_observations[0]) * self.action_history[index-1],
-    #     stacked_observations = numpy.concatenate(
-    #         (stacked_observations, previous_observation)
-    #     )
+    #     for past_observation_index in reversed(
+    #         range(index - num_stacked_observations, index)
+    #     ):
+    #         if 0 <= past_observation_index:
+    #             previous_observation = numpy.concatenate(
+    #                 (
+    #                     self.observation_history[past_observation_index],
+    #                     [
+    #                         numpy.ones_like(stacked_observations[0])
+    #                         * self.action_history[past_observation_index + 1]
+    #                     ],
+    #                 )
+    #             )
+    #         else:
+    #             previous_observation = numpy.concatenate(
+    #                 (
+    #                     numpy.zeros_like(self.observation_history[index]),
+    #                     [numpy.zeros_like(stacked_observations[0])],
+    #                 )
+    #             )
+
+    #         stacked_observations = numpy.concatenate(
+    #             (stacked_observations, previous_observation)
+    #         )
+
     #     return stacked_observations
+
+    def get_stacked_observations(self, index, num_stacked_observations):
+
+        index = index % len(self.observation_history)
+        stacked_observations = self.observation_history[index].copy()
+        previous_observation = numpy.ones_like(
+            stacked_observations[0]) * self.action_history[index-1],
+        stacked_observations = numpy.concatenate(
+            (stacked_observations, previous_observation)
+        )
+        return stacked_observations
 
 
 class MinMaxStats:
