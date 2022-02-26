@@ -200,11 +200,11 @@ class MuZeroFullyConnectedNetwork(AbstractNetwork):
             else:
                 x = torch.cat((encoded_state, self.encoded_state_global), dim=1)
             # except:
-            print(sp1)
-            print(sp2)
-            print(encoded_state.shape)
-            print(self.encoded_state_global.shape)
-            traceback.print_exc()
+            print('sp1',sp1)
+            print('sp2',sp2)
+            # print(encoded_state.shape)
+            # print(self.encoded_state_global.shape)
+            # traceback.print_exc()
             self.encoded_state_global_size = self.encoded_state_global.shape[1]
             encoded_state = self.fc_encoded_state_network(x)
 
